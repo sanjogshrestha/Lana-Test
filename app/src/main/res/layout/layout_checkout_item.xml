@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:bind="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <import type="android.view.View" />
+        <variable name="itemPosition" type="Integer"/>
+        <variable
+            name="clickListener"
+            type="com.sanjog.lanatest.adapter.ShopCartItemListener"/>
+        <variable
+            name="product"
+            type="com.sanjog.lanatest.data.entities.ProductCheckoutEntity"/>
+    </data>
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/card_side_margin"
+        android:layout_marginEnd="@dimen/card_side_margin"
+        android:layout_marginBottom="@dimen/card_bottom_margin"
+        app:cardCornerRadius="@dimen/card_corner_radius"
+        app:cardElevation="@dimen/card_elevation"
+        app:cardPreventCornerOverlap="false">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="5dp">
+
+            <ImageView
+                android:id="@+id/shopCartItemImageView"
+                android:layout_width="0dp"
+                android:layout_height="70dp"
+                bind:layout_constraintBottom_toBottomOf="parent"
+                bind:layout_constraintStart_toStartOf="parent"
+                bind:layout_constraintTop_toTopOf="parent"
+                bind:layout_constraintWidth_percent="0.2"
+                android:src="@drawable/ic_shopping_cart"
+                android:tint="@color/grey"
+                android:contentDescription="@string/cart_description" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/shopCartItemContent"
+                android:layout_width="0dp"
+                android:layout_height="100dp"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                bind:layout_constraintHorizontal_weight="1"
+                bind:layout_constraintEnd_toStartOf="@+id/totalLinearLayout"
+                bind:layout_constraintStart_toEndOf="@+id/shopCartItemImageView"
+                bind:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                bind:layout_constraintWidth_percent="0.5">
+
+                <TextView
+                    android:id="@+id/shopCartItemTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:ellipsize="end"
+                    android:maxLines="2"
+                    android:text="@{product.name}"
+                    android:textColor="@color/primaryColor"
+                    android:textSize="14sp"
+                    bind:layout_constraintEnd_toEndOf="parent"
+                    bind:layout_constraintStart_toStartOf="parent"
+                    bind:layout_constraintTop_toTopOf="parent"
+                    tools:text="Title" />
+
+                <TextView
+                    android:id="@+id/shopCartItemPrice"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:text="@{`Price:` + product.price + `£`}"
+                    android:textColor="@color/grey"
+                    android:textSize="@dimen/text_12"
+                    bind:layout_constraintEnd_toEndOf="parent"
+                    bind:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintBottom_toTopOf="@+id/shopCartItemSum"
+                    bind:layout_constraintTop_toBottomOf="@+id/shopCartItemTitle"
+                    tools:text="Subtitle" />
+
+                <TextView
+                    android:id="@+id/shopCartItemSum"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:text="@{`Quantity: ` + product.count}"
+                    android:textColor="@color/primaryColor"
+                    android:textSize="13sp"
+                    android:visibility="@{product.count > 0 ? View.VISIBLE : View.GONE}"
+                    bind:layout_constraintEnd_toEndOf="parent"
+                    bind:layout_constraintStart_toStartOf="parent"
+                    bind:layout_constraintBottom_toBottomOf="parent"
+                    bind:layout_constraintTop_toBottomOf="@+id/shopCartItemPrice"
+                    tools:text="3 pc"
+                    tools:visibility="visible" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <LinearLayout
+                android:id="@+id/totalLinearLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical"
+                bind:layout_constraintBottom_toBottomOf="parent"
+                bind:layout_constraintEnd_toEndOf="parent"
+                bind:layout_constraintHorizontal_weight="0.25"
+                bind:layout_constraintTop_toTopOf="parent"
+                bind:layout_constraintWidth_percent="0.3">
+
+                <TextView
+                    android:id="@+id/shopCartItemExpectedTotal"
+                    style="@style/TextAppearance.AppCompat.Caption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{product.expectedTotal + `£`}"
+                    tools:text="Total" />
+                <TextView
+                    android:id="@+id/shopCartItemTotal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="Total"
+                    android:textColor="@color/grey"
+                    android:text="@{product.total + `£`}"
+                    style="@style/TextAppearance.AppCompat.Title"/>
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+</layout>

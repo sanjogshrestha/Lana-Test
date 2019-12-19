@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <import type="android.view.View" />
+        <import type="com.sanjog.lanatest.webservice.Status"/>
+
+        <variable
+            name="clickListener"
+            type="com.sanjog.lanatest.adapter.ShopCartItemListener"/>
+
+        <variable
+            name="viewModel"
+            type="com.sanjog.lanatest.viewmodel.ProductViewModel"/>
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/titleConstraint"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/shopCartToolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:theme="@style/ToolBarDetailsStyle"
+            app:titleTextColor="@color/white"
+            app:title="@string/app_name">
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end">
+
+                <ImageView
+                    android:id="@+id/checkoutImageView"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_marginEnd="10dp"
+                    android:clickable="false"
+                    android:focusable="false"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_shopping_cart"
+                    tools:ignore="UnusedAttribute"
+                    tools:targetApi="m"
+                    android:contentDescription="@string/cart_description" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="23dp"
+                    android:layout_marginStart="25dp"
+                    android:layout_marginEnd="25dp"
+                    android:background="@drawable/badge_background"
+                    android:text="@{``+ viewModel.cartTotalCount}"
+                    android:visibility="@{viewModel.cartTotalCount > 0 ? View.VISIBLE : View.GONE}"
+                    android:gravity="center"
+                    android:minWidth="23dp"
+                    android:padding="3dp"
+                    android:textColor="@android:color/white"
+                    android:textSize="12sp"
+                    tools:text="1" />
+
+            </RelativeLayout>
+
+        </androidx.appcompat.widget.Toolbar>
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:visibility="@{Status.RUNNING == viewModel.networkState.status ? View.VISIBLE : View.GONE}"
+            android:indeterminateDrawable="@drawable/progress_drawable"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:paddingTop="@dimen/margin_normal"
+            android:clipToPadding="false"
+            android:visibility="@{Status.SUCCESS == viewModel.networkState.status ? View.VISIBLE : View.GONE}"
+            tools:listitem="@layout/layout_product_item"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/shopCartToolbar"/>
+
+        <include
+            android:id="@+id/emptyLayout"
+            app:viewModel="@{viewModel}"
+            layout="@layout/layout_empty_list_view"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:visibility="@{Status.FAILED == viewModel.networkState.status ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/shopCartToolbar"
+            tools:visibility="gone" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
