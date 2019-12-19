@@ -40,6 +40,28 @@ class ProductRepository {
             item.count * item.price, pair.second)
     }
 
+    /***
+     *  The marketing department believes in 2-for-1 promotions (buy two of the
+        same product, get one free), and would like for there to be a 2-for-1
+        special on `PEN` items.
+        The CFO insists that the best way to increase sales is with discounts
+        on bulk purchases (buying x or more of a product, the price of that
+        product is reduced), and demands that if you buy 3 or more `TSHIRT`
+        items, the price per unit should be 19.00€.
+        Lana's checkout process allows for items to be scanned in any order, and
+        should return the total amount to be paid.
+            Examples:
+            Items: PEN, TSHIRT, MUG
+            Total: 32.50€
+            Items: PEN, TSHIRT, PEN
+            Total: 25.00€
+            Items: TSHIRT, TSHIRT, TSHIRT, PEN, TSHIRT
+            Total: 81.00€
+            Items: PEN, TSHIRT, PEN, PEN, MUG, TSHIRT, TSHIRT
+            Total: 74.50€
+
+     *Here VOUCHER -> PEN
+     */
     private fun checkConditionForTotal(item: ProductDto): Pair<Double, Double> {
         var price = item.price
         val count = item.count
