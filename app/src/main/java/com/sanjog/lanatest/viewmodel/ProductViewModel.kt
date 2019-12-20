@@ -1,9 +1,11 @@
 package com.sanjog.lanatest.viewmodel
 
+import android.annotation.SuppressLint
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sanjog.lanatest.R
+import com.sanjog.lanatest.data.ProductCheckoutRepository
 import com.sanjog.lanatest.data.ProductRepository
 import com.sanjog.lanatest.data.model.ProductDto
 import com.sanjog.lanatest.data.model.ProductResultsDto
@@ -18,6 +20,7 @@ import retrofit2.HttpException
 import java.io.IOException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
+import java.util.concurrent.TimeUnit
 import javax.net.ssl.HttpsURLConnection
 import javax.net.ssl.SSLHandshakeException
 
@@ -28,10 +31,11 @@ import javax.net.ssl.SSLHandshakeException
  */
 class ProductViewModel : ViewModel() {
     private val compositeDisposable = CompositeDisposable()
-    val productList = MutableLiveData<ProductResultsDto>()
+    val productList = MutableLiveData<List<ProductDto>>()
     val networkState = MutableLiveData<NetworkState>()
     var selectedProduct = MutableLiveData<SelectedProductDTO>()
     var cartTotalCount = MutableLiveData<Int>()
+    var productCheckoutRepository = ProductCheckoutRepository()
     var productRepository = ProductRepository()
 
     init {
@@ -44,31 +48,54 @@ class ProductViewModel : ViewModel() {
      * Reason : Every time the app launches, it is expected to always add new/fresh items */
     private fun deletePreviousCheckoutHistory() {
         viewModelScope.launch {
-            productRepository.deleteAllItemsInCheckout()
+            productCheckoutRepository.deleteAllItemsInCheckout()
         }
     }
 
     /**
-     * This fetches the list of items from the Webservice
+     * Concept :
+     * If products are found in records, we display the items from the database (loaded initially from webservice).
+     * else we fetch the list of items from the webservice only if the last update is greater than a day
      * @see handleApiError() for error handling
      * @see NetworkState for different states of the webservice call*/
+    @SuppressLint("CheckResult")
     fun getProducts() {
         networkState.value = NetworkState.LOADING
-        compositeDisposable.add(
-            RetrofitApi.service.getProducts()
-            .observeOn(AndroidSchedulers.mainThread())
+        compositeDisposable.add(productRepository.getAllProducts()
             .subscribeOn(Schedulers.io())
-            .subscribe({ result: ProductResultsDto ->
-                productList.value = result
-                networkState.value = NetworkState.LOADED
-            }, { t: Throwable? ->
-                networkState.value = NetworkState.LOADED
-                if (t != null) {
-                    this.handleApiError(t)
-                }else {
-                    networkState.value = NetworkState.error(R.string.exception_generic)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { it ->
+                productList.value = it
+                if(it.isNotEmpty()) {
+                    networkState.value = NetworkState.LOADED
                 }
-            }))
+            })
+
+        Thread {
+            val hasExpired : Boolean = productRepository.productDao.hasExpired(FRESH_TIMEOUT,
+                System.currentTimeMillis())
+            if(hasExpired) {
+                compositeDisposable.add(
+                    RetrofitApi.service.getProducts()
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(Schedulers.io())
+                        .subscribe({ result: ProductResultsDto ->
+                            viewModelScope.launch {
+                                productRepository.insertProduct(result)
+                            }
+                            productList.value = result.products
+                            networkState.value = NetworkState.LOADED
+                        }, { t: Throwable? ->
+                            networkState.value = NetworkState.LOADED
+                            if (t != null) {
+                                this.handleApiError(t)
+                            } else {
+                                networkState.value = NetworkState.error(R.string.exception_generic)
+                            }
+                        })
+                )
+            }
+        }.start()
     }
 
     /**
@@ -109,7 +136,7 @@ class ProductViewModel : ViewModel() {
     fun onAddCounterItem(item: ProductDto, position: Int){
         item.count = 1
         viewModelScope.launch{
-            productRepository.insert(item)
+            productCheckoutRepository.insert(item)
         }
         selectedProduct.value = SelectedProductDTO(item, position)
         checkOrderCountInCart()
@@ -139,7 +166,7 @@ class ProductViewModel : ViewModel() {
         item.count--
         if(item.count == 0){
             viewModelScope.launch{
-                productRepository.deleteProduct(item)
+                productCheckoutRepository.deleteProduct(item)
             }
         }
         updateDB(item, position)
@@ -147,21 +174,21 @@ class ProductViewModel : ViewModel() {
 
     private fun updateDB(item: ProductDto, position: Int){
         viewModelScope.launch{
-            productRepository.update(item)
+            productCheckoutRepository.update(item)
         }
         selectedProduct.value = SelectedProductDTO(item, position)
         checkOrderCountInCart()
     }
 
     private fun checkOrderCountInCart(){
-        compositeDisposable.add(productRepository.getTotalOrdersInCheckout
+        compositeDisposable.add(productCheckoutRepository.getTotalOrdersInCheckout
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { count ->
                 cartTotalCount.value = count
             })
 
-        compositeDisposable.add(productRepository.productDao.getCount()
+        compositeDisposable.add(productCheckoutRepository.productDao.getCount()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { count ->
@@ -169,5 +196,9 @@ class ProductViewModel : ViewModel() {
                     cartTotalCount.value = 0
                 }
             })
+    }
+
+    companion object {
+        val FRESH_TIMEOUT = TimeUnit.DAYS.toMillis(1)
     }
 }
