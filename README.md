@@ -1,7 +1,7 @@
 # Lana-Test
 =============================================
 
-This test appl showcases the following Architecture Components:
+This test app showcases the following Architecture Components:
 
 * [Room](https://developer.android.com/topic/libraries/architecture/room.html)
 * [ViewModels](https://developer.android.com/reference/android/arch/lifecycle/ViewModel.html)
