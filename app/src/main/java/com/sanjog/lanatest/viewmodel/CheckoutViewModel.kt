@@ -3,7 +3,7 @@ package com.sanjog.lanatest.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.sanjog.lanatest.data.ProductRepository
+import com.sanjog.lanatest.data.ProductCheckoutRepository
 import com.sanjog.lanatest.data.entities.ProductCheckoutEntity
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -16,11 +16,11 @@ import io.reactivex.schedulers.Schedulers
 class CheckoutViewModel : ViewModel() {
     private val compositeDisposable = CompositeDisposable()
     var allItemsData : LiveData<List<ProductCheckoutEntity>>
-            = ProductRepository().allItemsInCheckout
+            = ProductCheckoutRepository().allItemsInCheckout
     var totalAmountLiveData = MutableLiveData<Double>()
 
     init {
-        compositeDisposable.add(ProductRepository().getTotalAmountInCheckout
+        compositeDisposable.add(ProductCheckoutRepository().getTotalAmountInCheckout
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { count ->
