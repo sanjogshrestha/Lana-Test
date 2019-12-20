@@ -5,13 +5,15 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.sanjog.lanatest.data.dao.CheckoutDao
+import com.sanjog.lanatest.data.dao.ProductDao
 import com.sanjog.lanatest.data.entities.ProductCheckoutEntity
+import com.sanjog.lanatest.data.entities.ProductEntity
 
 /**
  * Created by sanjogstha on 2019-12-11.
  * sanjogshrestha.nepal@gmail.com
  */
-@Database(entities = [ProductCheckoutEntity::class],
+@Database(entities = [ProductCheckoutEntity::class, ProductEntity::class],
     version = 1,
     exportSchema = false)
 abstract class AppDatabase: RoomDatabase() {
@@ -34,5 +36,6 @@ abstract class AppDatabase: RoomDatabase() {
         }
 
     }
-    abstract fun productDao(): CheckoutDao
+    abstract fun checkoutDao(): CheckoutDao
+    abstract fun productDao(): ProductDao
 }
