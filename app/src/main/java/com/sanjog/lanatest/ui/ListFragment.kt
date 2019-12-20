@@ -56,7 +56,7 @@ class ListFragment : Fragment(), ShopCartItemListener<ProductDto> {
         binding.recyclerView.adapter = adapter
 
         viewModel.productList.observe(this, Observer {
-            adapter.submitList(it.products)
+            adapter.submitList(it)
         })
 
         viewModel.selectedProduct.observe(this, Observer {
