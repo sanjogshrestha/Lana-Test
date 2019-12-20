@@ -6,8 +6,7 @@
 
     <data>
         <import type="android.view.View" />
-        <variable name="itemPosition"
-            type="Integer"/>
+        <variable name="itemPosition" type="Integer"/>
         <variable
             name="clickListener"
             type="com.sanjog.lanatest.adapter.ShopCartItemListener"/>
@@ -39,8 +38,7 @@
                 bind:layout_constraintStart_toStartOf="parent"
                 bind:layout_constraintTop_toTopOf="parent"
                 bind:layout_constraintWidth_percent="0.2"
-                android:src="@drawable/ic_shopping_cart"
-                android:tint="@color/grey"
+                imageSrc="@{product.code}"
                 android:contentDescription="@string/cart_description" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -100,8 +98,7 @@
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/shopCartItemAddButton"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:maxLines="1"
+                    android:layout_height="@dimen/dimen_32"
                     android:text="@string/add_to_cart"
                     android:onClick="@{() -> clickListener.onAddCounterItem(product,itemPosition)}"
                     android:textColor="@color/white"
@@ -119,7 +116,6 @@
                     android:id="@+id/shopCartItemDecButton"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:maxLines="1"
                     android:text="@string/dec_button"
                     android:textColor="@color/white"
                     android:textSize="20sp"

@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.sanjog.lanatest.R
 import com.sanjog.lanatest.data.entities.ProductCheckoutEntity
 import com.sanjog.lanatest.databinding.LayoutCheckoutItemBinding
 
@@ -39,14 +40,29 @@ class CheckOutListAdapter() : ListAdapter<ProductCheckoutEntity,
                 product = item
                 when (item.code) {
                     "VOUCHER" -> {
-                       shopCartItemExpectedTotal.visibility = if(item.count > 1)
-                           View.VISIBLE else View.GONE
+                        if(item.count > 1) {
+                            shopCartItemExpectedTotal.visibility = View.VISIBLE
+                            shopCartItemOffer.visibility = View.VISIBLE
+                            shopCartItemOffer.text = binding.root.context.getString(R.string.offer_voucher)
+                        } else {
+                            shopCartItemOffer.visibility = View.GONE
+                            shopCartItemExpectedTotal.visibility = View.GONE
+                        }
                     }
                     "TSHIRT" -> {
-                        shopCartItemExpectedTotal.visibility = if(item.count > 2)
-                            View.VISIBLE else View.GONE
+                        if(item.count > 2) {
+                            shopCartItemOffer.visibility = View.VISIBLE
+                            shopCartItemOffer.text = binding.root.context.getString(R.string.offer_tshirt)
+                            shopCartItemExpectedTotal.visibility = View.VISIBLE
+                        } else {
+                            shopCartItemExpectedTotal.visibility = View.GONE
+                            shopCartItemOffer.visibility = View.GONE
+                        }
                     }
-                    else ->  shopCartItemExpectedTotal.visibility = View.GONE
+                    else ->  {
+                        shopCartItemExpectedTotal.visibility = View.GONE
+                        shopCartItemOffer.visibility = View.GONE
+                    }
 
                 }
                 shopCartItemExpectedTotal.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG

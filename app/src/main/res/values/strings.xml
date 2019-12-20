@@ -13,4 +13,6 @@
     <string name="exception_bad_request">Bad Request</string>
     <string name="exception_internet_connection">Please check your internet connection.</string>
     <string name="no_products_found_in_the_cart">No products found in the cart.</string>
+    <string name="offer_voucher">* Buy 2-for-1</string>
+    <string name="offer_tshirt">* Bulk purchase discount</string>
 </resources>

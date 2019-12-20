@@ -42,7 +42,6 @@
                     android:id="@+id/checkoutImageView"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
-                    android:layout_marginEnd="10dp"
                     android:clickable="false"
                     android:focusable="false"
                     android:padding="8dp"
@@ -55,16 +54,16 @@
                     android:layout_width="wrap_content"
                     android:layout_height="23dp"
                     android:layout_marginStart="25dp"
-                    android:layout_marginEnd="25dp"
                     android:background="@drawable/badge_background"
                     android:text="@{``+ viewModel.cartTotalCount}"
-                    android:visibility="@{viewModel.cartTotalCount > 0 ? View.VISIBLE : View.GONE}"
+                    android:visibility="@{viewModel.cartTotalCount > 0 ? View.VISIBLE : View.INVISIBLE}"
                     android:gravity="center"
                     android:minWidth="23dp"
                     android:padding="3dp"
+                    tools:visibility="visible"
                     android:textColor="@android:color/white"
                     android:textSize="12sp"
-                    tools:text="1" />
+                    tools:text="11" />
 
             </RelativeLayout>
 

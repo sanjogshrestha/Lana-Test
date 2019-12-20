@@ -9,5 +9,6 @@
     <dimen name="margin_small">8dp</dimen>
     <dimen name="margin_extra_small">4dp</dimen>
     <dimen name="text_12">12sp</dimen>
+    <dimen name="dimen_32">34dp</dimen>
 
 </resources>
