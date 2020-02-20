@@ -7,6 +7,7 @@ This test app showcases the following Architecture Components:
 * [ViewModels](https://developer.android.com/reference/android/arch/lifecycle/ViewModel.html)
 * [LiveData](https://developer.android.com/reference/android/arch/lifecycle/LiveData.html)
 * [DATA BINDING](https://developer.android.com/topic/libraries/view-binding)
+* [Dagger](https://dagger.dev/android)
 
 Introduction
 -------------
