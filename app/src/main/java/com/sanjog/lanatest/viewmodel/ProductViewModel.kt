@@ -11,16 +11,18 @@ import com.sanjog.lanatest.data.model.ProductDto
 import com.sanjog.lanatest.data.model.ProductResultsDto
 import com.sanjog.lanatest.data.model.SelectedProductDTO
 import com.sanjog.lanatest.webservice.NetworkState
-import com.sanjog.lanatest.webservice.RetrofitApi
+import com.sanjog.lanatest.webservice.RetrofitService
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
+import retrofit2.Retrofit
 import java.io.IOException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 import javax.net.ssl.HttpsURLConnection
 import javax.net.ssl.SSLHandshakeException
 
@@ -29,7 +31,7 @@ import javax.net.ssl.SSLHandshakeException
  * Created by sanjogstha on 2019-12-16.
  * sanjogshrestha.nepal@gmail.com
  */
-class ProductViewModel : ViewModel() {
+class ProductViewModel  @Inject constructor(private val retrofit: Retrofit): ViewModel() {
     private val compositeDisposable = CompositeDisposable()
     val productList = MutableLiveData<List<ProductDto>>()
     val networkState = MutableLiveData<NetworkState>()
@@ -37,11 +39,6 @@ class ProductViewModel : ViewModel() {
     var cartTotalCount = MutableLiveData<Int>()
     var productCheckoutRepository = ProductCheckoutRepository()
     var productRepository = ProductRepository()
-
-    init {
-        deletePreviousCheckoutHistory()
-        getProducts()
-    }
 
     /**
      * This deletes all the previous details for checkout.
@@ -60,6 +57,7 @@ class ProductViewModel : ViewModel() {
      * @see NetworkState for different states of the webservice call*/
     @SuppressLint("CheckResult")
     fun getProducts() {
+        deletePreviousCheckoutHistory()
         networkState.value = NetworkState.LOADING
         compositeDisposable.add(productRepository.getAllProducts()
             .subscribeOn(Schedulers.io())
@@ -74,9 +72,11 @@ class ProductViewModel : ViewModel() {
         Thread {
             val hasExpired : Boolean = productRepository.productDao.hasExpired(FRESH_TIMEOUT,
                 System.currentTimeMillis())
-            if(hasExpired) {
+            val isProductEmpty : Boolean = productRepository.productDao.isEmpty() == 0
+            if(hasExpired || isProductEmpty) {
                 compositeDisposable.add(
-                    RetrofitApi.service.getProducts()
+                    retrofit.create(RetrofitService::class.java)
+                        .getProducts()
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribeOn(Schedulers.io())
                         .subscribe({ result: ProductResultsDto ->

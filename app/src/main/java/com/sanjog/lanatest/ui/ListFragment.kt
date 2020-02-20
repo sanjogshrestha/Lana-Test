@@ -1,6 +1,7 @@
 package com.sanjog.lanatest.ui
 
 import android.app.Activity
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,15 +11,20 @@ import androidx.appcompat.widget.Toolbar
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.sanjog.lanatest.LanaApplication
 import com.sanjog.lanatest.R
 import com.sanjog.lanatest.adapter.ProductListAdapter
 import com.sanjog.lanatest.adapter.ShopCartItemListener
 import com.sanjog.lanatest.data.model.ProductDto
 import com.sanjog.lanatest.databinding.FragmentListBinding
+import com.sanjog.lanatest.utils.viewModelProvider
 import com.sanjog.lanatest.viewmodel.ProductViewModel
+import javax.inject.Inject
 
 
 /**
@@ -26,17 +32,22 @@ import com.sanjog.lanatest.viewmodel.ProductViewModel
  * sanjogshrestha.nepal@gmail.com
  */
 class ListFragment : Fragment(), ShopCartItemListener<ProductDto> {
-    private lateinit var viewModel : ProductViewModel
+    @Inject lateinit var viewModel : ProductViewModel
     private lateinit var adapter : ProductListAdapter
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        (activity as MainActivity).mApplicationComponent.inject(this)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
         val binding : FragmentListBinding = DataBindingUtil.inflate(inflater,
             R.layout.fragment_list, container, false)
-        viewModel = ViewModelProviders.of(this).get(ProductViewModel::class.java)
 
         setHasOptionsMenu(false)
         binding.viewModel = viewModel
@@ -46,6 +57,7 @@ class ListFragment : Fragment(), ShopCartItemListener<ProductDto> {
            setUpToolbar(activity!!)
         }
 
+        viewModel.getProducts()
         binding.checkoutImageView.setOnClickListener {
             Navigation.findNavController(it)
                 .navigate(R.id.action_listFragment_to_checkoutFragment)

@@ -6,6 +6,9 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.sanjog.lanatest.data.entities.ProductEntity
 import io.reactivex.Single
+import androidx.lifecycle.LiveData
+
+
 
 /**
  * Created by sanjogstha on 2019-12-20.
@@ -21,4 +24,7 @@ interface ProductDao {
 
     @Query("SELECT COUNT(*) FROM product WHERE  :currentTime - lastUpdate >= :timeout")
     fun hasExpired(timeout : Long, currentTime : Long): Boolean
+
+    @Query("SELECT count(*) FROM product")
+    fun isEmpty(): Int
 }
